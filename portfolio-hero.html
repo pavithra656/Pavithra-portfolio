@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pavithra // Full Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  :root{
+    --bg:#05050a;
+    --bg-2:#0a0a14;
+    --cyan:#00e5ff;
+    --orange:#ff5e1a;
+    --white:#f2f4f8;
+    --muted:#7b8296;
+  }
+  *{margin:0; padding:0; box-sizing:border-box;}
+  html,body{
+    background:var(--bg);
+    color:var(--white);
+    font-family:'Rajdhani', sans-serif;
+    overflow-x:hidden;
+    height:100%;
+  }
+  #canvas-bg{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    z-index:0;
+  }
+
+  /* ---- Nav ---- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 24px;
+    mix-blend-mode:difference;
+  }
+  .logo{
+    font-family:'Orbitron'; font-weight:900; font-size:16px;
+    letter-spacing:2px; color:var(--white);
+  }
+  .logo span{color:var(--cyan);}
+  .nav-links{display:flex; gap:26px; font-size:14px; letter-spacing:1px; text-transform:uppercase;}
+  .nav-links a{color:var(--muted); text-decoration:none; font-weight:600;}
+  @media(max-width:640px){ .nav-links{display:none;} }
+
+  /* ---- Hero ---- */
+  .hero{
+    position:relative; z-index:10;
+    min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:100px 20px 60px;
+  }
+
+  .eyebrow{
+    font-family:'Rajdhani'; font-weight:600; font-size:13px;
+    letter-spacing:4px; text-transform:uppercase; color:var(--cyan);
+    display:flex; align-items:center; gap:10px; margin-bottom:18px;
+    opacity:0;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:''; width:24px; height:1px; background:var(--cyan); opacity:.6;
+  }
+
+  /* ---- Avatar portal ---- */
+  .portal{
+    position:relative;
+    width:280px; height:280px;
+    margin-bottom:6px;
+    opacity:0;
+  }
+  .portal-ring{
+    position:absolute; inset:0;
+    border-radius:50%;
+  }
+  .ring-dashed{
+    position:absolute; inset:-14px;
+    border-radius:50%;
+    border:1.5px dashed var(--cyan);
+    opacity:.45;
+  }
+  .ring-glow{
+    position:absolute; inset:-30px;
+    border-radius:50%;
+    background:radial-gradient(circle, var(--cyan)22 0%, transparent 65%);
+    filter:blur(6px);
+  }
+  .ring-solid{
+    position:absolute; inset:-2px;
+    border-radius:50%;
+    border:1px solid var(--orange);
+    opacity:.55;
+  }
+  .avatar-img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:contain;
+    object-position:bottom;
+    filter:drop-shadow(0 0 25px rgba(0,229,255,0.25));
+  }
+
+  h1.name{
+    font-family:'Orbitron'; font-weight:900;
+    font-size:clamp(34px, 9vw, 64px);
+    letter-spacing:2px;
+    line-height:1.05;
+    margin-top:14px;
+    opacity:0;
+  }
+  h1.name .last{
+    background:linear-gradient(90deg, var(--cyan), var(--orange));
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  .role{
+    font-family:'Rajdhani'; font-weight:500; font-size:clamp(15px,4vw,19px);
+    color:var(--muted); letter-spacing:1px; margin-top:14px; max-width:480px;
+    opacity:0;
+  }
+  .role b{color:var(--white); font-weight:600;}
+
+  .cta-row{
+    display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; justify-content:center;
+    opacity:0;
+  }
+  .btn{
+    font-family:'Rajdhani'; font-weight:700; font-size:14px;
+    letter-spacing:1.5px; text-transform:uppercase;
+    padding:13px 26px; border-radius:2px; text-decoration:none;
+    transition:transform .2s ease;
+  }
+  .btn:active{ transform:scale(.96); }
+  .btn-fill{ background:var(--cyan); color:#000; }
+  .btn-outline{ border:1px solid var(--muted); color:var(--white); }
+
+  .scroll-cue{
+    position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
+    font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    opacity:0;
+  }
+  .scroll-line{
+    width:1px; height:34px;
+    background:linear-gradient(var(--cyan), transparent);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<nav>
+  <div class="logo">PAVI<span>.</span>DEV</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#work">Work</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">SYSTEM_ONLINE</div>
+
+  <div class="portal">
+    <div class="ring-glow"></div>
+    <div class="ring-dashed"></div>
+    <div class="ring-solid"></div>
+    <img class="avatar-img" src="avatar.png" alt="Pavithra">
+  </div>
+
+  <h1 class="name">PAVITHRA<br><span class="last">GUTTAL</span></h1>
+
+  <p class="role">Full Stack Developer building <b>fast, AI-powered</b> web experiences — from React frontends to Supabase-backed systems, shipped from scratch to production.</p>
+
+  <div class="cta-row">
+    <a href="#work" class="btn btn-fill">View Work</a>
+    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+  </div>
+
+  <div class="scroll-cue">
+    <span>SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<script>
+/* ================= THREE.JS GALAXY BACKGROUND ================= */
+let scene, camera, renderer, stars, orbs = [];
+
+function initThree(){
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(65, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-bg'), alpha:true, antialias:true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  /* Starfield */
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1800;
+  const positions = new Float32Array(starCount * 3);
+  for(let i=0; i<starCount; i++){
+    positions[i*3] = (Math.random()-0.5) * 60;
+    positions[i*3+1] = (Math.random()-0.5) * 60;
+    positions[i*3+2] = (Math.random()-0.5) * 60;
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const starMat = new THREE.PointsMaterial({ color:0xffffff, size:0.06, transparent:true, opacity:0.8 });
+  stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  /* Glowing orbs (cyan + orange, no purple) */
+  const orbConfigs = [
+    { color:0x00e5ff, size:0.5, pos:[-3.5, 1.5, -6] },
+    { color:0xff5e1a, size:0.35, pos:[3.8, -1.8, -8] },
+    { color:0x00e5ff, size:0.22, pos:[2.5, 2.6, -5] },
+  ];
+  orbConfigs.forEach(cfg => {
+    const geo = new THREE.SphereGeometry(cfg.size, 32, 32);
+    const mat = new THREE.MeshBasicMaterial({ color: cfg.color, transparent:true, opacity:0.5 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(...cfg.pos);
+    scene.add(mesh);
+    orbs.push(mesh);
+  });
+
+  animate();
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  stars.rotation.y += 0.0004;
+  stars.rotation.x += 0.0001;
+
+  orbs.forEach((orb, i)=>{
+    orb.position.y += Math.sin(Date.now()*0.0006 + i) * 0.002;
+  });
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+try{ initThree(); } catch(e){ console.warn('Three.js failed to init', e); }
+
+/* ================= GSAP ENTRANCE ANIMATIONS ================= */
+const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+
+tl.to('.eyebrow', { opacity:1, y:0, duration:.6 })
+  .fromTo('.portal', { opacity:0, scale:0.85, y:20 }, { opacity:1, scale:1, y:0, duration:.9 }, '-=.2')
+  .to('h1.name', { opacity:1, y:0, duration:.8 }, '-=.5')
+  .to('.role', { opacity:1, y:0, duration:.7 }, '-=.4')
+  .to('.cta-row', { opacity:1, y:0, duration:.6 }, '-=.3')
+  .to('.scroll-cue', { opacity:1, duration:.5 }, '-=.2');
+
+/* slow rotation of the dashed ring */
+gsap.to('.ring-dashed', { rotation:360, duration:22, repeat:-1, ease:'linear', transformOrigin:'center center' });
+gsap.to('.ring-solid', { rotation:-360, duration:30, repeat:-1, ease:'linear', transformOrigin:'center center' });
+
+/* gentle float on avatar */
+gsap.to('.avatar-img', { y:-8, duration:2.4, repeat:-1, yoyo:true, ease:'sine.inOut' });
+
+/* scroll cue bob */
+gsap.to('.scroll-line', { scaleY:0.4, transformOrigin:'top', duration:1.1, repeat:-1, yoyo:true, ease:'sine.inOut' });
+</script>
+</body>
+</html>
