@@ -330,13 +330,13 @@
 
     <div class="about-grid">
       <div class="about-text reveal" data-anim="left">
-        <p>I'm a Full Stack Developer who just finished my BCA (2023–2026) with a 9.64 CGPA from Davangere University, Karnataka. I taught myself to build real, shipped products — not just tutorials — while freelancing on the side.</p>
+        <p>I'm a Full Stack Developer who just finished my BCA (2023–2026) from Davangere University, Karnataka. I taught myself to build real, shipped products — not just tutorials — while freelancing on the side.</p>
         <p>I care about building things that actually work end-to-end: a clean frontend backed by a real database, not just a static mockup. I enjoy picking up new tools quickly and shipping fast without cutting corners.</p>
         <p>Right now I'm looking for my first full-time role where I can keep shipping at that same speed, on a team that moves fast.</p>
       </div>
 
       <div class="stat-cards reveal" data-anim="pop-group">
-        <div class="mini-stat"><div class="mini-num">9.64</div><div class="mini-lbl">CGPA</div></div>
+        <div class="mini-stat"><div class="mini-num">BCA</div><div class="mini-lbl">Degree</div></div>
         <div class="mini-stat"><div class="mini-num">2026</div><div class="mini-lbl">Graduate</div></div>
         <div class="mini-stat"><div class="mini-num">4+</div><div class="mini-lbl">Live Projects</div></div>
         <div class="mini-stat"><div class="mini-num">Fresher</div><div class="mini-lbl">Open to Work</div></div>
@@ -540,31 +540,35 @@ try{
   console.warn('Hero animation skipped, content still visible', e);
 }
 
-/* ================= SCROLL REVEAL (swipe / pop effects, fail-safe) ================= */
+/* ================= SCROLL REVEAL (swipe / pop effects, fail-safe, replays every time) ================= */
 try{
   const revealEls = document.querySelectorAll('.reveal');
-  revealEls.forEach(el => gsap.set(el, { opacity:0 })); // hide only now that GSAP is confirmed working
+  revealEls.forEach(el => gsap.set(el, { opacity:0 }));
+
+  function playIn(el){
+    const anim = el.dataset.anim;
+    if(anim === 'left'){
+      gsap.fromTo(el, { opacity:0, x:-60 }, { opacity:1, x:0, duration:.8, ease:'power3.out', overwrite:true });
+    } else if(anim === 'right'){
+      gsap.fromTo(el, { opacity:0, x:60 }, { opacity:1, x:0, duration:.8, ease:'power3.out', overwrite:true });
+    } else if(anim === 'pop-group'){
+      gsap.set(el, { opacity:1 });
+      gsap.fromTo(el.children, { opacity:0, scale:0.6, y:20 },
+        { opacity:1, scale:1, y:0, duration:.55, stagger:0.08, ease:'back.out(2.2)', overwrite:true });
+    } else {
+      gsap.fromTo(el, { opacity:0, y:26 }, { opacity:1, y:0, duration:.7, ease:'power3.out', overwrite:true });
+    }
+    if(el.classList.contains('section-head')) el.classList.add('in-view');
+  }
 
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting){
-        const el = entry.target;
-        const anim = el.dataset.anim;
-
-        if(anim === 'left'){
-          gsap.fromTo(el, { opacity:0, x:-60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
-        } else if(anim === 'right'){
-          gsap.fromTo(el, { opacity:0, x:60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
-        } else if(anim === 'pop-group'){
-          gsap.set(el, { opacity:1 });
-          gsap.fromTo(el.children, { opacity:0, scale:0.6, y:20 },
-            { opacity:1, scale:1, y:0, duration:.55, stagger:0.08, ease:'back.out(2.2)' });
-        } else {
-          gsap.fromTo(el, { opacity:0, y:26 }, { opacity:1, y:0, duration:.7, ease:'power3.out' });
-        }
-
-        if(el.classList.contains('section-head')) el.classList.add('in-view');
-        observer.unobserve(el);
+        playIn(entry.target);
+      } else {
+        // reset so it can replay next time it scrolls back into view
+        gsap.set(entry.target, { opacity:0 });
+        if(entry.target.classList.contains('section-head')) entry.target.classList.remove('in-view');
       }
     });
   }, { threshold: 0.18 });
@@ -587,10 +591,12 @@ document.querySelectorAll('.section-head').forEach(el => {
   headObserver.observe(el);
 });
 
-/* ================= SAFETY NET: force-show anything still hidden after 4s ================= */
+/* ================= SAFETY NET: force-show only currently-visible-on-screen elements stuck at opacity 0 ================= */
 setTimeout(()=>{
   document.querySelectorAll('.reveal, .eyebrow, .portal, h1.name, .role, .cta-row, .scroll-cue').forEach(el=>{
-    if(getComputedStyle(el).opacity === '0'){ el.style.opacity = 1; }
+    const rect = el.getBoundingClientRect();
+    const onScreen = rect.top < window.innerHeight && rect.bottom > 0;
+    if(onScreen && getComputedStyle(el).opacity === '0'){ el.style.opacity = 1; }
   });
 }, 4000);
 
