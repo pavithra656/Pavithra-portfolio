@@ -148,6 +148,101 @@
     width:1px; height:34px;
     background:linear-gradient(var(--cyan), transparent);
   }
+
+  /* ---- Shared section layout ---- */
+  .section{
+    position:relative; z-index:10;
+    padding:90px 20px;
+  }
+  .section-inner{ max-width:880px; margin:0 auto; }
+  .section-head{ margin-bottom:36px; }
+  .tag{
+    font-size:12px; letter-spacing:3px; color:var(--orange);
+    font-weight:600; display:block; margin-bottom:8px;
+  }
+  .section-head h2{
+    font-family:'Orbitron'; font-weight:800; font-size:clamp(24px,6vw,34px);
+    letter-spacing:1px;
+  }
+  .reveal{ opacity:0; transform:translateY(24px); }
+  .reveal.in-view{ opacity:1; transform:translateY(0); transition:opacity .7s ease, transform .7s ease; }
+
+  /* ---- About ---- */
+  .about-grid{ display:flex; flex-direction:column; gap:26px; margin-bottom:30px; }
+  .about-text p{ color:#c4c9d6; font-size:16px; line-height:1.7; margin-bottom:14px; }
+  .stat-cards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .mini-stat{
+    background:var(--bg-2); border:1px solid #1c1c28; border-radius:6px;
+    padding:16px; text-align:center;
+  }
+  .mini-num{ font-family:'Orbitron'; font-weight:700; font-size:22px; color:var(--cyan); }
+  .mini-lbl{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip-row.small{ margin:12px 0; }
+  .chip{
+    font-size:12px; padding:6px 12px; border-radius:14px;
+    border:1px solid #26263a; color:var(--white); background:var(--bg-2);
+    letter-spacing:.3px;
+  }
+
+  /* ---- Projects ---- */
+  .project-list{ display:flex; flex-direction:column; gap:18px; }
+  .project-card{
+    position:relative; overflow:hidden;
+    background:var(--bg-2); border:1px solid #1c1c28; border-radius:10px;
+    padding:22px;
+  }
+  .project-glow{
+    position:absolute; top:-40px; right:-40px; width:120px; height:120px;
+    border-radius:50%; filter:blur(40px); opacity:.35; z-index:0;
+  }
+  .project-glow.cyan{ background:var(--cyan); }
+  .project-glow.orange{ background:var(--orange); }
+  .project-body{ position:relative; z-index:1; }
+  .project-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .project-top h3{ font-family:'Orbitron'; font-size:19px; font-weight:700; }
+  .badge-ai{
+    font-size:9px; letter-spacing:1.5px; padding:4px 9px; border-radius:10px;
+    background:var(--cyan-dim, rgba(0,229,255,0.15)); color:var(--cyan); font-weight:700;
+  }
+  .project-body p{ color:var(--muted); font-size:14px; line-height:1.6; }
+  .project-link{
+    display:inline-block; margin-top:14px; font-size:13px; font-weight:600;
+    color:var(--orange); text-decoration:none; letter-spacing:.5px;
+  }
+
+  /* ---- Contact ---- */
+  .contact-grid{ display:flex; flex-direction:column; gap:26px; }
+  .contact-form{ display:flex; flex-direction:column; }
+  .contact-form label{ font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; margin-top:14px; }
+  .contact-form input, .contact-form textarea{
+    background:var(--bg-2); border:1px solid #26263a; color:var(--white);
+    padding:12px 14px; border-radius:6px; font-family:'Rajdhani'; font-size:15px; outline:none;
+  }
+  .contact-form textarea{ min-height:100px; resize:vertical; }
+  .contact-form input:focus, .contact-form textarea:focus{ border-color:var(--cyan); }
+  .contact-form button{ margin-top:20px; }
+
+  .contact-links{ display:flex; flex-direction:column; gap:10px; }
+  .contact-links-full{ display:grid; grid-template-columns:1fr; gap:12px; }
+  .link-card{
+    display:flex; flex-direction:column; gap:2px;
+    background:var(--bg-2); border:1px solid #1c1c28; border-radius:8px;
+    padding:14px 16px; text-decoration:none;
+  }
+  .link-label{ font-size:10px; letter-spacing:2px; color:var(--orange); font-weight:700; }
+  .link-value{ font-size:14px; color:var(--white); }
+
+  footer{ text-align:center; margin-top:70px; padding-bottom:20px; }
+  footer p{ font-size:12px; color:var(--muted); letter-spacing:.5px; }
+
+  @media(min-width:720px){
+    .about-grid{ flex-direction:row; align-items:center; }
+    .about-text{ flex:1.3; }
+    .stat-cards{ flex:1; }
+    .contact-links-full{ grid-template-columns:1fr 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -186,6 +281,139 @@
     <span>SCROLL</span>
     <div class="scroll-line"></div>
   </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about" class="section">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <span class="tag">// 01</span>
+      <h2>ABOUT_ME</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm a Full Stack Developer who just finished my BCA (2023–2026) with a 9.64 CGPA from Davangere University, Karnataka. I taught myself to build real, shipped products — not just tutorials — while freelancing on the side.</p>
+        <p>I care about building things that actually work end-to-end: a clean frontend backed by a real database, not just a static mockup. I enjoy picking up new tools quickly and shipping fast without cutting corners.</p>
+        <p>Right now I'm looking for my first full-time role where I can keep shipping at that same speed, on a team that moves fast.</p>
+      </div>
+
+      <div class="stat-cards reveal">
+        <div class="mini-stat"><div class="mini-num">9.64</div><div class="mini-lbl">CGPA</div></div>
+        <div class="mini-stat"><div class="mini-num">2026</div><div class="mini-lbl">Graduate</div></div>
+        <div class="mini-stat"><div class="mini-num">4+</div><div class="mini-lbl">Live Projects</div></div>
+        <div class="mini-stat"><div class="mini-num">Fresher</div><div class="mini-lbl">Open to Work</div></div>
+      </div>
+    </div>
+
+    <div class="chip-row reveal">
+      <span class="chip">JavaScript</span>
+      <span class="chip">React.js</span>
+      <span class="chip">HTML5</span>
+      <span class="chip">CSS3</span>
+      <span class="chip">Node.js</span>
+      <span class="chip">REST APIs</span>
+      <span class="chip">Supabase</span>
+      <span class="chip">Git / GitHub</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section id="work" class="section">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <span class="tag">// 02</span>
+      <h2>SELECTED_WORK</h2>
+    </div>
+
+    <div class="project-list">
+
+      <div class="project-card reveal">
+        <div class="project-glow cyan"></div>
+        <div class="project-body">
+          <div class="project-top">
+            <h3>Kidoo</h3>
+            <span class="badge-ai">AI</span>
+          </div>
+          <p>A personal AI companion chatbot with voice — powered by Groq's LLaMA 3.3 70B with Gemini fallback, and real-time voice via Puter.js.</p>
+          <div class="chip-row small">
+            <span class="chip">Groq LLaMA</span>
+            <span class="chip">Gemini API</span>
+            <span class="chip">Puter.js Voice</span>
+          </div>
+          <a href="https://github.com/pavithra656/Kido" target="_blank" class="project-link">View on GitHub →</a>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-glow orange"></div>
+        <div class="project-body">
+          <div class="project-top">
+            <h3>Dyu Art Cafe</h3>
+            <span class="badge-ai">FULL STACK</span>
+          </div>
+          <p>A Supabase-backed booking platform for a real art cafe — handling live availability, bookings, and data persistence end-to-end.</p>
+          <div class="chip-row small">
+            <span class="chip">Supabase</span>
+            <span class="chip">Real-time DB</span>
+            <span class="chip">Booking Logic</span>
+          </div>
+          <a href="https://artful-bengaluru-haven.lovable.app/" target="_blank" class="project-link">View Live →</a>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-glow cyan"></div>
+        <div class="project-body">
+          <div class="project-top">
+            <h3>Hood by Olive</h3>
+            <span class="badge-ai">FRONTEND</span>
+          </div>
+          <p>A restaurant website built from real Google Maps data, deployed on GitHub Pages — clean layout, fast load, mobile-first.</p>
+          <div class="chip-row small">
+            <span class="chip">HTML/CSS/JS</span>
+            <span class="chip">GitHub Pages</span>
+          </div>
+          <a href="https://pavithra656.github.io/hood-by-olive" target="_blank" class="project-link">View Live →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact" class="section">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <span class="tag">// 03</span>
+      <h2>LET'S_CONNECT</h2>
+    </div>
+
+    <div class="contact-links-full reveal">
+      <a href="mailto:pavithrasureshguttal@gmail.com" class="link-card">
+        <span class="link-label">EMAIL</span>
+        <span class="link-value">pavithrasureshguttal@gmail.com</span>
+      </a>
+      <a href="tel:+916364800705" class="link-card">
+        <span class="link-label">PHONE</span>
+        <span class="link-value">+91 63648 00705</span>
+      </a>
+      <a href="https://www.linkedin.com/in/pavithra-suresh-guttal-b91581411" target="_blank" class="link-card">
+        <span class="link-label">LINKEDIN</span>
+        <span class="link-value">/in/pavithra-suresh-guttal</span>
+      </a>
+      <a href="https://github.com/pavithra656" target="_blank" class="link-card">
+        <span class="link-label">GITHUB</span>
+        <span class="link-value">@pavithra656</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Pavithra Suresh Guttal</p>
+  </footer>
 </section>
 
 <script>
@@ -272,6 +500,19 @@ gsap.to('.avatar-img', { y:-8, duration:2.4, repeat:-1, yoyo:true, ease:'sine.in
 
 /* scroll cue bob */
 gsap.to('.scroll-line', { scaleY:0.4, transformOrigin:'top', duration:1.1, repeat:-1, yoyo:true, ease:'sine.inOut' });
+
+/* ================= SCROLL REVEAL (About / Projects / Contact) ================= */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
 </script>
 </body>
 </html>
+
