@@ -59,7 +59,6 @@
     font-family:'Rajdhani'; font-weight:600; font-size:13px;
     letter-spacing:4px; text-transform:uppercase; color:var(--cyan);
     display:flex; align-items:center; gap:10px; margin-bottom:18px;
-    opacity:0;
   }
   .eyebrow::before, .eyebrow::after{
     content:''; width:24px; height:1px; background:var(--cyan); opacity:.6;
@@ -70,7 +69,6 @@
     position:relative;
     width:280px; height:280px;
     margin-bottom:6px;
-    opacity:0;
   }
   .portal-ring{
     position:absolute; inset:0;
@@ -108,7 +106,6 @@
     letter-spacing:2px;
     line-height:1.05;
     margin-top:14px;
-    opacity:0;
   }
   h1.name .last{
     background:linear-gradient(90deg, var(--cyan), var(--orange));
@@ -120,13 +117,11 @@
   .role{
     font-family:'Rajdhani'; font-weight:500; font-size:clamp(15px,4vw,19px);
     color:var(--muted); letter-spacing:1px; margin-top:14px; max-width:480px;
-    opacity:0;
   }
   .role b{color:var(--white); font-weight:600;}
 
   .cta-row{
     display:flex; gap:14px; margin-top:34px; flex-wrap:wrap; justify-content:center;
-    opacity:0;
   }
   .btn{
     font-family:'Rajdhani'; font-weight:700; font-size:14px;
@@ -157,7 +152,6 @@
     position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
     font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted);
     display:flex; flex-direction:column; align-items:center; gap:8px;
-    opacity:0;
   }
   .scroll-line{
     width:1px; height:34px;
@@ -189,7 +183,6 @@
     animation:drawLine .8s ease forwards .2s;
   }
   @keyframes drawLine{ to{ transform:scaleX(1); } }
-  .reveal{ opacity:0; }
 
   /* ---- About ---- */
   .about-grid{ display:flex; flex-direction:column; gap:26px; margin-bottom:30px; }
@@ -525,72 +518,88 @@ window.addEventListener('resize', ()=>{
 
 try{ initThree(); } catch(e){ console.warn('Three.js failed to init', e); }
 
-/* ================= GSAP ENTRANCE ANIMATIONS ================= */
-const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+/* ================= GSAP ENTRANCE ANIMATIONS (fail-safe) ================= */
+try{
+  const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
+  gsap.set(['.eyebrow','.portal','h1.name','.role','.cta-row','.scroll-cue'], { opacity:0 });
+  gsap.set('.portal', { y:20, scale:0.85 });
+  gsap.set(['h1.name','.role','.cta-row'], { y:20 });
 
-tl.to('.eyebrow', { opacity:1, y:0, duration:.6 })
-  .fromTo('.portal', { opacity:0, scale:0.85, y:20 }, { opacity:1, scale:1, y:0, duration:.9 }, '-=.2')
-  .to('h1.name', { opacity:1, y:0, duration:.8 }, '-=.5')
-  .to('.role', { opacity:1, y:0, duration:.7 }, '-=.4')
-  .to('.cta-row', { opacity:1, y:0, duration:.6 }, '-=.3')
-  .to('.scroll-cue', { opacity:1, duration:.5 }, '-=.2');
+  tl.to('.eyebrow', { opacity:1, duration:.6 })
+    .to('.portal', { opacity:1, scale:1, y:0, duration:.9 }, '-=.2')
+    .to('h1.name', { opacity:1, y:0, duration:.8 }, '-=.5')
+    .to('.role', { opacity:1, y:0, duration:.7 }, '-=.4')
+    .to('.cta-row', { opacity:1, y:0, duration:.6 }, '-=.3')
+    .to('.scroll-cue', { opacity:1, duration:.5 }, '-=.2');
 
-/* slow rotation of the dashed ring */
-gsap.to('.ring-dashed', { rotation:360, duration:22, repeat:-1, ease:'linear', transformOrigin:'center center' });
-gsap.to('.ring-solid', { rotation:-360, duration:30, repeat:-1, ease:'linear', transformOrigin:'center center' });
+  gsap.to('.ring-dashed', { rotation:360, duration:22, repeat:-1, ease:'linear', transformOrigin:'center center' });
+  gsap.to('.ring-solid', { rotation:-360, duration:30, repeat:-1, ease:'linear', transformOrigin:'center center' });
+  gsap.to('.avatar-img', { y:-8, duration:2.4, repeat:-1, yoyo:true, ease:'sine.inOut' });
+  gsap.to('.scroll-line', { scaleY:0.4, transformOrigin:'top', duration:1.1, repeat:-1, yoyo:true, ease:'sine.inOut' });
+}catch(e){
+  console.warn('Hero animation skipped, content still visible', e);
+}
 
-/* gentle float on avatar */
-gsap.to('.avatar-img', { y:-8, duration:2.4, repeat:-1, yoyo:true, ease:'sine.inOut' });
+/* ================= SCROLL REVEAL (swipe / pop effects, fail-safe) ================= */
+try{
+  const revealEls = document.querySelectorAll('.reveal');
+  revealEls.forEach(el => gsap.set(el, { opacity:0 })); // hide only now that GSAP is confirmed working
 
-/* scroll cue bob */
-gsap.to('.scroll-line', { scaleY:0.4, transformOrigin:'top', duration:1.1, repeat:-1, yoyo:true, ease:'sine.inOut' });
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const anim = el.dataset.anim;
 
-/* ================= SCROLL REVEAL (swipe / pop effects) ================= */
-const revealEls = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      const el = entry.target;
-      const anim = el.dataset.anim;
+        if(anim === 'left'){
+          gsap.fromTo(el, { opacity:0, x:-60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
+        } else if(anim === 'right'){
+          gsap.fromTo(el, { opacity:0, x:60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
+        } else if(anim === 'pop-group'){
+          gsap.set(el, { opacity:1 });
+          gsap.fromTo(el.children, { opacity:0, scale:0.6, y:20 },
+            { opacity:1, scale:1, y:0, duration:.55, stagger:0.08, ease:'back.out(2.2)' });
+        } else {
+          gsap.fromTo(el, { opacity:0, y:26 }, { opacity:1, y:0, duration:.7, ease:'power3.out' });
+        }
 
-      if(anim === 'left'){
-        gsap.fromTo(el, { opacity:0, x:-60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
-      } else if(anim === 'right'){
-        gsap.fromTo(el, { opacity:0, x:60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
-      } else if(anim === 'pop-group'){
-        gsap.fromTo(el.children, { opacity:0, scale:0.6, y:20 },
-          { opacity:1, scale:1, y:0, duration:.55, stagger:0.08, ease:'back.out(2.2)' });
-        gsap.set(el, { opacity:1 });
-      } else {
-        gsap.fromTo(el, { opacity:0, y:26 }, { opacity:1, y:0, duration:.7, ease:'power3.out' });
+        if(el.classList.contains('section-head')) el.classList.add('in-view');
+        observer.unobserve(el);
       }
+    });
+  }, { threshold: 0.18 });
+  revealEls.forEach(el => observer.observe(el));
+}catch(e){
+  console.warn('Scroll reveal skipped, content still visible', e);
+  document.querySelectorAll('.reveal').forEach(el => el.style.opacity = 1);
+}
 
-      if(el.classList.contains('section-head')) el.classList.add('in-view');
-      observer.unobserve(el);
-    }
-  });
-}, { threshold: 0.18 });
-revealEls.forEach(el => observer.observe(el));
+/* section head underline trigger */
+document.querySelectorAll('.section-head').forEach(el => {
+  const headObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        headObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold:0.3 });
+  headObserver.observe(el);
+});
 
-/* section head underline trigger (separate, not a .reveal element) */
-const headObserver = new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
-    if(entry.isIntersecting){
-      entry.target.classList.add('in-view');
-      headObserver.unobserve(entry.target);
-    }
+/* ================= SAFETY NET: force-show anything still hidden after 4s ================= */
+setTimeout(()=>{
+  document.querySelectorAll('.reveal, .eyebrow, .portal, h1.name, .role, .cta-row, .scroll-cue').forEach(el=>{
+    if(getComputedStyle(el).opacity === '0'){ el.style.opacity = 1; }
   });
-}, { threshold:0.3 });
-document.querySelectorAll('.section-head').forEach(el => headObserver.observe(el));
+}, 4000);
 
 /* ================= SCROLL PARALLAX ON GALAXY ORBS ================= */
-window.addEventListener('scroll', ()=>{
-  const scrollY = window.scrollY;
-  orbs.forEach((orb, i)=>{
-    orb.position.x += 0; // keep base drift from animate(), just nudge z for depth parallax
-  });
-  camera.position.y = -scrollY * 0.0015;
-}, { passive:true });
+try{
+  window.addEventListener('scroll', ()=>{
+    camera.position.y = -window.scrollY * 0.0015;
+  }, { passive:true });
+}catch(e){}
 </script>
 </body>
 </html>
