@@ -132,11 +132,26 @@
     font-family:'Rajdhani'; font-weight:700; font-size:14px;
     letter-spacing:1.5px; text-transform:uppercase;
     padding:13px 26px; border-radius:2px; text-decoration:none;
-    transition:transform .2s ease;
+    transition:transform .2s ease, box-shadow .3s ease;
   }
   .btn:active{ transform:scale(.96); }
-  .btn-fill{ background:var(--cyan); color:#000; }
-  .btn-outline{ border:1px solid var(--muted); color:var(--white); }
+  .btn-fill{
+    background:var(--cyan); color:#000;
+    box-shadow:0 0 18px rgba(0,229,255,0.35), 0 0 40px rgba(0,229,255,0.15);
+    animation:btnGlow 2.6s ease-in-out infinite;
+  }
+  @keyframes btnGlow{
+    0%,100%{ box-shadow:0 0 18px rgba(0,229,255,0.35), 0 0 40px rgba(0,229,255,0.12); }
+    50%{ box-shadow:0 0 26px rgba(0,229,255,0.55), 0 0 55px rgba(0,229,255,0.25); }
+  }
+  .btn-outline{
+    border:1px solid var(--muted); color:var(--white);
+    transition:border-color .3s ease, box-shadow .3s ease, color .3s ease;
+  }
+  .btn-outline:active{
+    border-color:var(--orange); color:var(--orange);
+    box-shadow:0 0 20px rgba(255,94,26,0.3);
+  }
 
   .scroll-cue{
     position:absolute; bottom:26px; left:50%; transform:translateX(-50%);
@@ -162,10 +177,19 @@
   }
   .section-head h2{
     font-family:'Orbitron'; font-weight:800; font-size:clamp(24px,6vw,34px);
-    letter-spacing:1px;
+    letter-spacing:1px; position:relative; display:inline-block; padding-bottom:14px;
   }
-  .reveal{ opacity:0; transform:translateY(24px); }
-  .reveal.in-view{ opacity:1; transform:translateY(0); transition:opacity .7s ease, transform .7s ease; }
+  .section-head h2::after{
+    content:''; position:absolute; left:0; bottom:0; height:3px; width:100%;
+    background:linear-gradient(90deg, var(--cyan), var(--orange));
+    transform:scaleX(0); transform-origin:left;
+    box-shadow:0 0 12px rgba(0,229,255,0.5);
+  }
+  .section-head.in-view h2::after{
+    animation:drawLine .8s ease forwards .2s;
+  }
+  @keyframes drawLine{ to{ transform:scaleX(1); } }
+  .reveal{ opacity:0; }
 
   /* ---- About ---- */
   .about-grid{ display:flex; flex-direction:column; gap:26px; margin-bottom:30px; }
@@ -175,7 +199,11 @@
     background:var(--bg-2); border:1px solid #1c1c28; border-radius:6px;
     padding:16px; text-align:center;
   }
-  .mini-num{ font-family:'Orbitron'; font-weight:700; font-size:22px; color:var(--cyan); }
+  .mini-num{ font-family:'Orbitron'; font-weight:700; font-size:22px; color:var(--cyan); animation:numGlow 3s ease-in-out infinite; }
+  @keyframes numGlow{
+    0%,100%{ text-shadow:0 0 6px rgba(0,229,255,0.3); }
+    50%{ text-shadow:0 0 16px rgba(0,229,255,0.65); }
+  }
   .mini-lbl{ font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
 
   .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -183,7 +211,11 @@
   .chip{
     font-size:12px; padding:6px 12px; border-radius:14px;
     border:1px solid #26263a; color:var(--white); background:var(--bg-2);
-    letter-spacing:.3px;
+    letter-spacing:.3px; transition:box-shadow .3s ease, border-color .3s ease;
+  }
+  .chip:active{
+    border-color:var(--cyan);
+    box-shadow:0 0 14px rgba(0,229,255,0.4);
   }
 
   /* ---- Projects ---- */
@@ -192,6 +224,12 @@
     position:relative; overflow:hidden;
     background:var(--bg-2); border:1px solid #1c1c28; border-radius:10px;
     padding:22px;
+    transition:border-color .35s ease, box-shadow .35s ease, transform .25s ease;
+  }
+  .project-card:active{
+    transform:scale(0.985);
+    border-color:var(--cyan);
+    box-shadow:0 0 30px rgba(0,229,255,0.18);
   }
   .project-glow{
     position:absolute; top:-40px; right:-40px; width:120px; height:120px;
@@ -230,6 +268,12 @@
     display:flex; flex-direction:column; gap:2px;
     background:var(--bg-2); border:1px solid #1c1c28; border-radius:8px;
     padding:14px 16px; text-decoration:none;
+    transition:border-color .3s ease, box-shadow .3s ease, transform .2s ease;
+  }
+  .link-card:active{
+    transform:scale(0.97);
+    border-color:var(--orange);
+    box-shadow:0 0 22px rgba(255,94,26,0.25);
   }
   .link-label{ font-size:10px; letter-spacing:2px; color:var(--orange); font-weight:700; }
   .link-value{ font-size:14px; color:var(--white); }
@@ -292,13 +336,13 @@
     </div>
 
     <div class="about-grid">
-      <div class="about-text reveal">
+      <div class="about-text reveal" data-anim="left">
         <p>I'm a Full Stack Developer who just finished my BCA (2023–2026) with a 9.64 CGPA from Davangere University, Karnataka. I taught myself to build real, shipped products — not just tutorials — while freelancing on the side.</p>
         <p>I care about building things that actually work end-to-end: a clean frontend backed by a real database, not just a static mockup. I enjoy picking up new tools quickly and shipping fast without cutting corners.</p>
         <p>Right now I'm looking for my first full-time role where I can keep shipping at that same speed, on a team that moves fast.</p>
       </div>
 
-      <div class="stat-cards reveal">
+      <div class="stat-cards reveal" data-anim="pop-group">
         <div class="mini-stat"><div class="mini-num">9.64</div><div class="mini-lbl">CGPA</div></div>
         <div class="mini-stat"><div class="mini-num">2026</div><div class="mini-lbl">Graduate</div></div>
         <div class="mini-stat"><div class="mini-num">4+</div><div class="mini-lbl">Live Projects</div></div>
@@ -306,7 +350,7 @@
       </div>
     </div>
 
-    <div class="chip-row reveal">
+    <div class="chip-row reveal" data-anim="pop-group">
       <span class="chip">JavaScript</span>
       <span class="chip">React.js</span>
       <span class="chip">HTML5</span>
@@ -329,7 +373,7 @@
 
     <div class="project-list">
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-anim="left">
         <div class="project-glow cyan"></div>
         <div class="project-body">
           <div class="project-top">
@@ -346,7 +390,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-anim="right">
         <div class="project-glow orange"></div>
         <div class="project-body">
           <div class="project-top">
@@ -363,7 +407,7 @@
         </div>
       </div>
 
-      <div class="project-card reveal">
+      <div class="project-card reveal" data-anim="left">
         <div class="project-glow cyan"></div>
         <div class="project-body">
           <div class="project-top">
@@ -391,7 +435,7 @@
       <h2>LET'S_CONNECT</h2>
     </div>
 
-    <div class="contact-links-full reveal">
+    <div class="contact-links-full reveal" data-anim="pop-group">
       <a href="mailto:pavithrasureshguttal@gmail.com" class="link-card">
         <span class="link-label">EMAIL</span>
         <span class="link-value">pavithrasureshguttal@gmail.com</span>
@@ -501,18 +545,52 @@ gsap.to('.avatar-img', { y:-8, duration:2.4, repeat:-1, yoyo:true, ease:'sine.in
 /* scroll cue bob */
 gsap.to('.scroll-line', { scaleY:0.4, transformOrigin:'top', duration:1.1, repeat:-1, yoyo:true, ease:'sine.inOut' });
 
-/* ================= SCROLL REVEAL (About / Projects / Contact) ================= */
+/* ================= SCROLL REVEAL (swipe / pop effects) ================= */
 const revealEls = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{
     if(entry.isIntersecting){
-      entry.target.classList.add('in-view');
-      observer.unobserve(entry.target);
+      const el = entry.target;
+      const anim = el.dataset.anim;
+
+      if(anim === 'left'){
+        gsap.fromTo(el, { opacity:0, x:-60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
+      } else if(anim === 'right'){
+        gsap.fromTo(el, { opacity:0, x:60 }, { opacity:1, x:0, duration:.8, ease:'power3.out' });
+      } else if(anim === 'pop-group'){
+        gsap.fromTo(el.children, { opacity:0, scale:0.6, y:20 },
+          { opacity:1, scale:1, y:0, duration:.55, stagger:0.08, ease:'back.out(2.2)' });
+        gsap.set(el, { opacity:1 });
+      } else {
+        gsap.fromTo(el, { opacity:0, y:26 }, { opacity:1, y:0, duration:.7, ease:'power3.out' });
+      }
+
+      if(el.classList.contains('section-head')) el.classList.add('in-view');
+      observer.unobserve(el);
     }
   });
-}, { threshold: 0.15 });
+}, { threshold: 0.18 });
 revealEls.forEach(el => observer.observe(el));
+
+/* section head underline trigger (separate, not a .reveal element) */
+const headObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      headObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold:0.3 });
+document.querySelectorAll('.section-head').forEach(el => headObserver.observe(el));
+
+/* ================= SCROLL PARALLAX ON GALAXY ORBS ================= */
+window.addEventListener('scroll', ()=>{
+  const scrollY = window.scrollY;
+  orbs.forEach((orb, i)=>{
+    orb.position.x += 0; // keep base drift from animate(), just nudge z for depth parallax
+  });
+  camera.position.y = -scrollY * 0.0015;
+}, { passive:true });
 </script>
 </body>
 </html>
-
